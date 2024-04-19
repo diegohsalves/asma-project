@@ -2,7 +2,14 @@ package br.com.asmaproject.dto;
 
 import br.com.asmaproject.domain.Usuario;
 
-public class UsuarioResponseDTO {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class UsuarioResponseDTO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private String id;
     private String nome;
     private String email;
@@ -15,7 +22,7 @@ public class UsuarioResponseDTO {
         this.id = usuario.getId();
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
-        this.funcao = usuario.getFuncao().getNome();
+        this.funcao = usuario.getFuncao().name();
     }
 
     public String getId() {
