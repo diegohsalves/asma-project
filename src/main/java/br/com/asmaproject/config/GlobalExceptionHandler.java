@@ -1,9 +1,6 @@
 package br.com.asmaproject.config;
 
-import br.com.asmaproject.exception.ApiResponse;
-import br.com.asmaproject.exception.EmailIndisponivelException;
-import br.com.asmaproject.exception.InvalidParameterException;
-import br.com.asmaproject.exception.NotFoundException;
+import br.com.asmaproject.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,5 +33,14 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = CpfIndisponivelException.class)
+    public ResponseEntity<Object> handleValidationException(CpfIndisponivelException ex) {
+        ApiResponse<?> errorResponse = new ApiResponse<>(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 }
