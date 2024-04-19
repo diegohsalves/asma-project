@@ -2,6 +2,7 @@ package br.com.asmaproject.domain;
 
 import br.com.asmaproject.domain.enums.Funcao;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +17,7 @@ public class Usuario implements UserDetails {
     @Id
     private String id;
     private String nome;
+    @Indexed(unique = true)
     private String email;
     private String senha;
     private Funcao funcao;
