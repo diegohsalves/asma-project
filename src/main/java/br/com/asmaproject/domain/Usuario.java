@@ -1,30 +1,26 @@
 package br.com.asmaproject.domain;
 
-import br.com.asmaproject.dto.UsuarioRequestDTO;
-import jakarta.persistence.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
+import br.com.asmaproject.domain.enums.Funcao;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
-@Document(collection = "Usuarios")
-public class Usuario {
+@Document
+public class Usuario implements UserDetails {
     @Id
     private String id;
     private String nome;
-    @Indexed(unique = true)
     private String email;
     private String senha;
     private Funcao funcao;
 
     public Usuario() {
-    }
-
-    public Usuario(UsuarioRequestDTO usuarioRequestDTO, Funcao funcao) {
-        this.nome = usuarioRequestDTO.getNome();
-        this.senha = usuarioRequestDTO.getSenha();
-        this.email = usuarioRequestDTO.getEmail();
-        this.funcao = funcao;
     }
 
     public Usuario(String nome, String email, String senha, Funcao funcao) {
@@ -81,5 +77,46 @@ public class Usuario {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.funcao == Funcao.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_SUPER"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else if (this.funcao == Funcao.SUPERVISOR) {
+            return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getPassword() {
+        return this.getSenha();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

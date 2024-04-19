@@ -1,35 +1,33 @@
 package br.com.asmaproject.service;
 
-import br.com.asmaproject.domain.Funcao;
 import br.com.asmaproject.domain.Usuario;
-import br.com.asmaproject.dto.UsuarioRequestDTO;
+import br.com.asmaproject.dto.UsuarioRegisterDTO;
 import br.com.asmaproject.dto.UsuarioResponseDTO;
 import br.com.asmaproject.exception.EmailIndisponivelException;
 import br.com.asmaproject.exception.InvalidParameterException;
 import br.com.asmaproject.exception.NotFoundException;
 import br.com.asmaproject.repository.UsuarioRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioService {
 
-    private UsuarioRepository usuarioRepository;
-    private FuncaoService funcaoService;
+    private final UsuarioRepository usuarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, FuncaoService funcaoService) {
+    public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.funcaoService = funcaoService;
     }
 
-    public void criarNovoUsuario(UsuarioRequestDTO usuarioRequestDTO) {
-        if (usuarioRequestDTO.getEmail() != null && !emailEstaDisponivel(usuarioRequestDTO.getEmail())) {
+    public void criarNovoUsuario(UsuarioRegisterDTO usuarioRegisterDTO) {
+        if (usuarioRepository.findByEmail(usuarioRegisterDTO.email()).isPresent()) {
             throw new EmailIndisponivelException("Email já cadastrado!");
         }
 
-        Funcao funcao = funcaoService.encontrarFuncaoPorNome(usuarioRequestDTO.getFuncao());
-        Usuario novoUsuario = new Usuario(usuarioRequestDTO, funcao);
+        String encryptedPassword = new BCryptPasswordEncoder().encode(usuarioRegisterDTO.senha());
+        Usuario usuario = new Usuario(usuarioRegisterDTO.nome(), usuarioRegisterDTO.email(), encryptedPassword, usuarioRegisterDTO.funcao());
 
-        usuarioRepository.save(novoUsuario);
+        usuarioRepository.save(usuario);
     }
 
     public UsuarioResponseDTO buscarUsuarioPorId(String id) {
@@ -39,33 +37,29 @@ public class UsuarioService {
         return new UsuarioResponseDTO(usuario);
     }
 
-    public boolean emailEstaDisponivel(String email) {
-        return usuarioRepository.existsByEmail(email);
-    }
-
-    public void alterarUsuario(String id, UsuarioRequestDTO usuarioRequestDTO) {
+    public void alterarUsuario(String id, UsuarioRegisterDTO usuarioRegisterDTO) {
         if (id != null) {
             Usuario usuario = usuarioRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
 
-            if (usuarioRequestDTO.getNome() != null) {
-                usuario.setNome(usuarioRequestDTO.getNome());
-            }
-
-            if (usuarioRequestDTO.getEmail() != null) {
-                if (!emailEstaDisponivel(usuarioRequestDTO.getEmail())) {
+            if (usuarioRegisterDTO.email() != null) {
+                if (usuarioRepository.findByEmail(usuarioRegisterDTO.email()).isPresent()) {
                     throw new EmailIndisponivelException("Email já cadastrado");
                 }
 
-                usuario.setEmail(usuarioRequestDTO.getEmail());
+                usuario.setEmail(usuarioRegisterDTO.email());
             }
 
-            if (usuarioRequestDTO.getSenha() != null) {
-                usuario.setSenha(usuarioRequestDTO.getSenha());
+            if (usuarioRegisterDTO.nome() != null) {
+                usuario.setNome(usuarioRegisterDTO.nome());
             }
 
-            if (usuarioRequestDTO.getFuncao() != null) {
-                usuario.setFuncao(funcaoService.encontrarFuncaoPorNome(usuarioRequestDTO.getFuncao()));
+            if (usuarioRegisterDTO.senha() != null) {
+                usuario.setSenha(usuarioRegisterDTO.senha());
+            }
+
+            if (usuarioRegisterDTO.funcao() != null) {
+                usuario.setFuncao(usuarioRegisterDTO.funcao());
             }
 
             usuarioRepository.save(usuario);

@@ -1,8 +1,14 @@
 package br.com.asmaproject.exception;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 
-public class ApiResponse<T> {
+public class ApiResponse<T> implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private int status;
     private String mensagem;
     private Instant timestamp;
