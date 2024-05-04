@@ -1,13 +1,13 @@
 package br.com.asmaproject.domain.enums;
 
-public enum Funcao {
+public enum Role {
     ADMIN("Administrador"),
     SUPERVISOR("Supervisor"),
     USUARIO("Usuario");
 
     private String nome;
 
-    Funcao(String nome) {
+    Role(String nome) {
         this.nome = nome;
     }
 

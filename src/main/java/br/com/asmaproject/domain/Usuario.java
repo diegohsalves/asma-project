@@ -1,6 +1,6 @@
 package br.com.asmaproject.domain;
 
-import br.com.asmaproject.domain.enums.Funcao;
+import br.com.asmaproject.domain.enums.Role;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,16 +20,16 @@ public class Usuario implements UserDetails {
     @Indexed(unique = true)
     private String email;
     private String senha;
-    private Funcao funcao;
+    private Role role;
 
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String senha, Funcao funcao) {
+    public Usuario(String nome, String email, String senha, Role role) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.funcao = funcao;
+        this.role = role;
     }
 
     public String getId() {
@@ -60,12 +60,12 @@ public class Usuario implements UserDetails {
         this.senha = senha;
     }
 
-    public Funcao getFuncao() {
-        return funcao;
+    public Role getRole() {
+        return role;
     }
 
-    public void setFuncao(Funcao funcao) {
-        this.funcao = funcao;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
@@ -83,9 +83,9 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.funcao == Funcao.ADMIN) {
-            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_SUPER"), new SimpleGrantedAuthority("ROLE_USER"));
-        } else if (this.funcao == Funcao.SUPERVISOR) {
+        if (this.role == Role.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else if (this.role == Role.SUPERVISOR) {
             return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_USER"));
         } else {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));

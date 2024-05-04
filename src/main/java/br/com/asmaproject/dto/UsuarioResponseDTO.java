@@ -13,7 +13,7 @@ public class UsuarioResponseDTO implements Serializable {
     private String id;
     private String nome;
     private String email;
-    private String funcao;
+    private String role;
 
     public UsuarioResponseDTO() {
     }
@@ -22,7 +22,7 @@ public class UsuarioResponseDTO implements Serializable {
         this.id = usuario.getId();
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
-        this.funcao = usuario.getFuncao().name();
+        this.role = usuario.getRole().name();
     }
 
     public String getId() {
@@ -49,11 +49,11 @@ public class UsuarioResponseDTO implements Serializable {
         this.email = email;
     }
 
-    public String getFuncao() {
-        return funcao;
+    public String getRole() {
+        return role;
     }
 
-    public void setFuncao(String funcao) {
-        this.funcao = funcao;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

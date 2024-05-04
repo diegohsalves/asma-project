@@ -10,6 +10,8 @@ import br.com.asmaproject.repository.UsuarioRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UsuarioService {
 
@@ -25,7 +27,7 @@ public class UsuarioService {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(usuarioRegisterDTO.senha());
-        Usuario usuario = new Usuario(usuarioRegisterDTO.nome(), usuarioRegisterDTO.email(), encryptedPassword, usuarioRegisterDTO.funcao());
+        Usuario usuario = new Usuario(usuarioRegisterDTO.nome(), usuarioRegisterDTO.email(), encryptedPassword, usuarioRegisterDTO.role());
 
         usuarioRepository.save(usuario);
     }
@@ -58,8 +60,10 @@ public class UsuarioService {
                 usuario.setSenha(usuarioRegisterDTO.senha());
             }
 
-            if (usuarioRegisterDTO.funcao() != null) {
-                usuario.setFuncao(usuarioRegisterDTO.funcao());
+            if (usuarioRegisterDTO.role() != null) {
+                usuario.setRole(usuarioRegisterDTO.role());
+            } else {
+                throw new InvalidParameterException("Role não pode ser nulo");
             }
 
             usuarioRepository.save(usuario);
@@ -79,4 +83,9 @@ public class UsuarioService {
         }
     }
 
+    public List<UsuarioResponseDTO> buscarTodos() {
+        return usuarioRepository.findAll().stream()
+                .map(UsuarioResponseDTO::new)
+                .toList();
+    }
 }
