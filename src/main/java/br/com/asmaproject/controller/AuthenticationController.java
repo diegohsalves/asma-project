@@ -5,8 +5,10 @@ import br.com.asmaproject.domain.Usuario;
 import br.com.asmaproject.dto.AuthenticationDTO;
 import br.com.asmaproject.dto.LoginResponseDTO;
 import br.com.asmaproject.dto.UsuarioRegisterDTO;
+import br.com.asmaproject.exception.ApiResponse;
 import br.com.asmaproject.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,8 +40,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<String> register(@RequestBody @Valid UsuarioRegisterDTO usuarioRegisterDTO) {
+    public ResponseEntity<ApiResponse<?>> register(@RequestBody @Valid UsuarioRegisterDTO usuarioRegisterDTO) {
         usuarioService.criarNovoUsuario(usuarioRegisterDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK.value(), "Usuário registrado com sucesso!"));
     }
 }

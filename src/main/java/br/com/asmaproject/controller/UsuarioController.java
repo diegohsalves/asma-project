@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
@@ -23,6 +25,12 @@ public class UsuarioController {
     public ResponseEntity<ApiResponse<UsuarioResponseDTO>> buscarUsuario(@PathVariable @Valid String id) {
         UsuarioResponseDTO usuario = usuarioService.buscarUsuarioPorId(id);
         return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK.value(), usuario));
+    }
+
+    @GetMapping("/buscarTodos")
+    public ResponseEntity<ApiResponse<List<UsuarioResponseDTO>>> buscarTodosUsuarios() {
+        List<UsuarioResponseDTO> usuarios = usuarioService.buscarTodos();
+        return ResponseEntity.ok().body(new ApiResponse<>(HttpStatus.OK.value(), usuarios));
     }
 
     @PutMapping("/atualizar/{id}")
